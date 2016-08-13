@@ -51,7 +51,7 @@ static unsigned int idlewait = 20;
 module_param_named(adreno_idler_idlewait, idlewait, uint, 0664);
 
 /* Taken from ondemand */
-static unsigned int downdifferential = 20;
+static unsigned int downdifferential = 25;
 module_param_named(adreno_idler_downdifferential, downdifferential, uint, 0664);
 
 /* Master switch to activate the whole routine */
