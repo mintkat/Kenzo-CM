@@ -29,7 +29,7 @@ export KBUILD_BUILD_HOST="BlackMarch.net"
 export LOCALVERSION="-Nightmare™"
 
 # Kernel Details
-NAME="Kenzo_Darkness";
+NAME="Kenzo_Nightmare";
 VERSION="-$(date +"%Y-%m-%d"-%H%M)-";
 RELEASE="$NAME$VERSION$TC";
 
