@@ -1,0 +1,26 @@
+Nightmare™ Kernel
+
+What's added/enabled:
+- Impulse CPU Governor
+- Darkness CPU Governor
+- FIOPS I/O Scheduler
+- Kernel Same-page Merging
+- ZRAM
+- Westwood+ TCP Congestion Control
+- Dynamic FSync
+- Power Suspend
+- KCAL Colour Control
+- FRandom
+- ZSwap
+- VNSwap
+- Adreno Idler
+- Sound Control
+- Undervolt
+- etc
+
+What's removed:
+- F2FS Filesystem support
+- CFQ I/O Scheduler
+- Deadline I/O Scheduler
+- ROW I/O Scheduler
+- etc
