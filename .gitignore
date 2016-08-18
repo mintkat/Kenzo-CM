@@ -93,6 +93,8 @@ signing_key.x509
 x509.genkey
 
 # Do not upload
-dtbTool
-build.sh
 arch/arm64/boot/dt.img
+out/system/lib/modules/wlan.ko
+out/tools/Image
+out/tools/dt.img
+out/*.zip
