@@ -26,7 +26,7 @@ export ARCH=arm64
 export SUBARCH=arm64
 export KBUILD_BUILD_USER="MOVZX"
 export KBUILD_BUILD_HOST="BlackMarch.net"
-export LOCALVERSION="-Despair-or-Darkness"
+export LOCALVERSION="-Nightmare™"
 
 # Kernel Details
 NAME="Kenzo_Darkness";
