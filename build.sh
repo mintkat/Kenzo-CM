@@ -1,58 +1,40 @@
-# Paths
-KERNEL=$PWD;
-IMAGE=$KERNEL/arch/arm64/boot/Image;
-DTB=$KERNEL/arch/arm64/boot/dt.img;
-DTBTOOL=$KERNEL/dtbToolCM;
-OUT=$KERNEL/out;
-MODULES=$KERNEL/out/system/lib/modules;
+#!/bin/bash
 
-# Toolchains
-# UBERTC
-	# TOOLCHAIN="/home/goghor/Android/TC/DespairFactor-aarch64-linux-android-4.9-kernel";
-	# TC="UBERTC-4.9";
-# Stock Google Toolchain
-	TOOLCHAIN="/home/goghor/Android/TC/aarch64-linux-android-4.9-aosp";
-	TC="GOOGLE-4.9";
-STRIP=$TOOLCHAIN/bin/aarch64-linux-android-strip;
-export CROSS_COMPILE=$TOOLCHAIN/bin/aarch64-linux-android-;
-export LD_LIBRARY_PATH=$TOOLCHAIN/lib/;
+# User defined variables (only edit this part)
+TOOLCHAIN=/home/mintkat/Android/tc/aarch64-linux-google-android-4.9-aosp
+MYDEFCONFIG=cyanogenmod_kenzo_defconfig
+THREADS=6
 
-# defconfig
-KENZO_CM=cyanogenmod_kenzo_defconfig;
+#Create dirs
+mkdir -p build/staging/system/lib/modules/
+mkdir -p build/staging/kernel
+mkdir -p build/dist
 
-# Variables
-THREADS=16;
+# Step 1 - Set ARCH and CROSS_COMPILE
 export ARCH=arm64
-export SUBARCH=arm64
-export KBUILD_BUILD_USER="MOVZX"
-export KBUILD_BUILD_HOST="BlackMarch.net"
-export LOCALVERSION="-Despair™"
+export CROSS_COMPILE=$TOOLCHAIN/bin/aarch64-linux-android-
 
-# Kernel Details
-NAME="Kenzo_Despair";
-VERSION="-$(date +"%Y-%m-%d"-%H%M)-";
-RELEASE="$NAME$VERSION$TC";
+if [ "$1" == "clean" ]; then
+	make clean
+fi
+if [ "$1" == "cleanall" ]; then
+	rm -rf build/dist/*
+	rm -rf build/staging/system/lib/modules/*
+	rm -rf build/staging/kernel/*
+	make clean
+fi
 
-# Build Kernel
-clear;
-echo "665" > .version;
-make $KENZO_CM -j$THREADS;
-make Image -j$THREADS;
-make dtbs -j$THREADS;
-make modules -j$THREADS;
-$DTBTOOL -2 -o $DTB -s 2048 -p $KERNEL/scripts/dtc/ $KERNEL/arch/arm/boot/dts/;
-rm $MODULES/*;
-find . -name '*.ko' -exec cp {} $MODULES/ \;
-cd $MODULES;
-$STRIP --strip-unneeded *.ko;
-cd $OUT;
-rm -rf *.zip;
-rm -rf tools/Image;
-rm -rf tools/dt.img;
-mv $DTB $OUT/tools/dt.img;
-mv $IMAGE $OUT/tools/Image;
-cd $OUT;
-zip -r `echo $RELEASE`.zip *;
-pwd;
-ll;
-cd $KERNEL;
+# Step 2 - Make defconfig
+make $MYDEFCONFIG
+# Step 3 - Make kernel
+make -j$THREADS
+# Step 4 - Copy and rename kernel image to staging
+cp arch/arm64/boot/Image build/staging/kernel/Image
+# Step 4 - Create dt.img and move to staging
+scripts/dtbTool -v -2 -s 2048 -o build/staging/kernel/dt.img -p scripts/dtc/ arch/arm/boot/dts/
+# Step 5 - Copy wlan.ko and strip it
+$TOOLCHAIN/bin/aarch64-linux-android-strip --strip-unneeded drivers/staging/prima/wlan.ko
+cp drivers/staging/prima/wlan.ko build/staging/system/lib/modules/wlan.ko
+# Step 6 - Zip it up to build/dist
+cd build/staging
+zip -yr ../../build/dist/kenzo_kernel_`date +%d-%m-%Y`.zip .
