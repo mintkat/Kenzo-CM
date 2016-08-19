@@ -240,10 +240,12 @@ CONFIG_SHELL := $(shell if [ -x "$$BASH" ]; then echo $$BASH; \
 	  else if [ -x /bin/bash ]; then echo /bin/bash; \
 	  else echo sh; fi ; fi)
 
+GRAPHITE = -fgraphite -fgraphite-identity -floop-interchange -ftree-loop-distribution -floop-strip-mine -floop-block -ftree-loop-linear
+
 HOSTCC       = $(CCACHE) gcc
 HOSTCXX      = $(CCACHE) g++
-HOSTCFLAGS   = -Wall -Wmissing-prototypes -Wstrict-prototypes -Ofast -fomit-frame-pointer
-HOSTCXXFLAGS = -Ofast
+HOSTCFLAGS   = -Wall -Wmissing-prototypes -Wstrict-prototypes -Ofast -fomit-frame-pointer $(GRAPHITE)
+HOSTCXXFLAGS = -Ofast $(GRAPHITE)
 
 # Decide whether to build built-in, modular, or both.
 # Normally, just do built-in.
@@ -354,6 +356,14 @@ CFLAGS_KERNEL	=
 AFLAGS_KERNEL	=
 CFLAGS_GCOV	= -fprofile-arcs -ftest-coverage
 
+ARM_ARCH_OPT := -mcpu=cortex-a57.cortex-a53 -mtune=cortex-a57.cortex-a53
+GEN_OPT_FLAGS := $(call cc-option,$(ARM_ARCH_OPT),-march=armv8-a+crypto) \
+ -g0 \
+ -DNDEBUG \
+ -fomit-frame-pointer \
+ -fmodulo-sched \
+ -fmodulo-sched-allow-regmoves \
+ -fivopts
 
 # Use USERINCLUDE when you must reference the UAPI directories only.
 USERINCLUDE    := \
@@ -377,23 +387,17 @@ KBUILD_CPPFLAGS := -D__KERNEL__
 
 KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-strict-aliasing -fno-common \
-		   -Werror-implicit-function-declaration \
-		   -Wno-format-security \
-		   -fno-delete-null-pointer-checks \
-		   -Wno-maybe-uninitialized \
-		   -fgcse-sm -fgcse-las -fgcse-after-reload \
-		   -pipe -DNDEBUG -fmodulo-sched -fmodulo-sched-allow-regmoves \
-		   -fgraphite -fgraphite-identity -floop-parallelize-all -floop-interchange -floop-block \
-		   -floop-nest-optimize -floop-strip-mine -ftree-loop-distribution -ftree-loop-linear \
-		   -fivopts -g0 \
-		   -ftree-vectorize -fsingle-precision-constant -fforce-addr -fsched-spec-load \
-		   -mtune=cortex-a57.cortex-a53 -mcpu=cortex-a57.cortex-a53
+		   -Werror-implicit-function-declaration -Wno-format-security \
+		   -fno-delete-null-pointer-checks -Wno-maybe-uninitialized \
+		   -pipe -g0 -ftree-vectorize -fsingle-precision-constant \
+		   -fforce-addr -fsched-spec-load \
+		   $(GEN_OPT_FLAGS)
 
-KBUILD_AFLAGS_KERNEL :=
-KBUILD_CFLAGS_KERNEL :=
+KBUILD_AFLAGS_KERNEL := $(GEN_OPT_FLAGS)
+KBUILD_CFLAGS_KERNEL := $(GEN_OPT_FLAGS)
 KBUILD_AFLAGS   := -D__ASSEMBLY__
-KBUILD_AFLAGS_MODULE  := -DMODULE
-KBUILD_CFLAGS_MODULE  := -DMODULE
+KBUILD_AFLAGS_MODULE  := -DMODULE $(GEN_OPT_FLAGS)
+KBUILD_CFLAGS_MODULE  := -DMODULE $(GEN_OPT_FLAGS)
 KBUILD_LDFLAGS_MODULE := -T $(srctree)/scripts/module-common.lds
 
 # Read KERNELRELEASE from include/config/kernel.release (if it exists)

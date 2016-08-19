@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # User defined variables (only edit this part)
-TOOLCHAIN=/home/mintkat/Android/tc/aarch64-linux-google-android-4.9-aosp
+TOOLCHAIN=/home/mintkat/Android/tc/aarch64-linux-android-4.9-UBERTC
 MYDEFCONFIG=cyanogenmod_kenzo_defconfig
 THREADS=6
 
