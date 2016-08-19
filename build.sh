@@ -46,7 +46,7 @@ find . -name '*.ko' -exec cp {} $MODULES/ \;
 cd $MODULES;
 $STRIP --strip-unneeded *.ko;
 cd $OUT;
-rm -rf *.zip;
+rm -rf Kenzo_Despair-*.zip;
 rm -rf tools/Image;
 rm -rf tools/dt.img;
 mv $DTB $OUT/tools/dt.img;
