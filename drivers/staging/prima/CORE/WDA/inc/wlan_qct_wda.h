@@ -502,9 +502,6 @@ typedef struct
 
    tWDA_AddSelfStaDebugParams wdaAddSelfStaParams;
 
-   uint8_t  mgmt_pktfree_fail;
-   vos_lock_t mgmt_pkt_lock;
-
 } tWDA_CbContext ; 
 
 typedef struct
